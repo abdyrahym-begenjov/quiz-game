@@ -1,0 +1,91 @@
+===============================================================================================
+                   			 🤔  QUIZ — GAME RULES  📯
+===============================================================================================
+
+This is a multilingual quiz game (supporting English and Russian) that saves your user profile, 
+tracks high scores, and challenges you across two distinct gameplay modes.
+
+
+📜 General Rules
+------------------------------------------------------------------------------------------------
+* Setup: On your first run, you will be prompted to select your language and enter your name. Your name 
+and progression are saved across sessions.
+* Answering Questions: For every question, you must type a valid letter corresponding to the choices 
+provided (A, B, C, D for English or А, Б, В, Г for Russian). Invalid responses will not be accepted, 
+and you will be forced to try again.
+* Question Pool: Once a question has been asked, it is removed from the active question list for that 
+session so you will not see duplicates.
+
+
+🎮 Breakdown of Game Modes
+------------------------------------------------------------------------------------------------
+1) Timer Mode
+
+In this mode, you race against a ticking clock to answer a fixed set of questions.
+
+Difficulty Parameters:
+* Easy: 15 questions, starting with 45 seconds.
+* Normal: 25 questions, starting with 60 seconds.
+* Hard: 40 questions, starting with 90 seconds.
+* Dangerous: 40 questions, starting with 90 seconds, featuring a "surprise" penalty mechanism.
+
+Rules & Time Mechanics:
+* Answering a question correctly awards you an extra 5 seconds.
+* Answering incorrectly penalizes your time by the number of seconds it took you to think about that 
+specific answer.
+* Dangerous Surprise: If playing on "Dangerous" difficulty and you guess wrong, there is a hidden "bomb" 
+among the incorrect answers. If your wrong answer triggers the bomb, you immediately lose an additional 
+10 seconds.
+* Sudden Death: If your correct and incorrect counts are completely tied at the end of the question pool, 
+the game gives you one final tie-breaker question to determine your ultimate victory or loss.
+* Winning/Scoring Conditions: If your time drops to 00:00 or below, it's an immediate Game Over.
+* If you finish all questions, your rank is determined by accuracy: Perfect scores give you "You Win!!!" 
+(3 stars), $\ge$ 70% accuracy gives "Good Work!!!" (2 stars), and $>50\%$ accuracy gives "Weak, but still 
+you're great!!!" (1 star). Anything below or equal to 50% triggers a Game Over.
+* Final points are calculated using your regular correct answers and remaining time, divided by your 
+penalizing mistakes to ensure a balanced leaderboard score.
+
+
+
+2) Infinity Mode
+
+This mode tests your long-term survival rather than speed. There is no timer, allowing you to take as 
+much time as you need per question.
+
+Rules & Mechanics:
+* You begin the game with 3 Heart (❤️) lives.
+* Every correct answer awards you 1 point.
+* Every incorrect answer deducts 1 Heart life.
+* End Game: The game ends immediately when you lose all 3 hearts (Game Over) or if you successfully clear 
+out the entire question database pool, crowning you the "ABSOLUTE CHAMPION!!!". Your accumulated points 
+are saved straight to the leaderboard.
+
+
+🕹️ Other Modes
+------------------------------------------------------------------------------------------------
+The main menu features four structural modes outside of direct 
+gameplay to help you manage your profile, view information, and exit safely.
+
+1) Rules Mode
+
+This mode dynamically reads and displays the game rules directly from external text files based on your 
+currently selected language. It will load and print the contents of `ru_rules.txt` if your language is 
+set to Russian, or `en_rules.txt` if your language is set to English. It then waits for you to press Enter 
+before returning to the main menu.
+
+2) Highscores Mode
+
+This mode fetches data from your local save file (`base.json`) and dynamically renders a formatted scoreboard.
+It showcases your name alongside your cumulative acquired points, cleanly split between both "Timer" and 
+"Infinity" modes.
+
+3) Settings Mode
+
+Allows you to update your profile variables on the fly. You can change your active username or swap 
+the game's language between English and Russian. Switching the language automatically updates the active 
+text translation maps and re-indexes the question file pool (`q1.json` for English, `q2.json` for Russian).
+
+4) Exit Mode
+
+Safely closes out the quiz game. It triggers an exit confirmation prompt ("Yes" or "No") to ensure you don't 
+accidentally close your application and lose your current session navigation.

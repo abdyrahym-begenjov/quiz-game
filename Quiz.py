@@ -65,7 +65,7 @@ if name not in base:
 while True:
     print(translator('Quiz', lang))
     print(f'{translator('Creator: Abdyrahym Begenjov', lang)}     (GitHub: abdyrahym-begenjov)')
-    print(translator('Game      Highscores      Settings      Exit', lang))
+    print(translator('Game      Rules      Highscores      Settings      Exit', lang))
     mode=input(translator('Choose a game mode: ', lang))
     mode=mode.title().strip()
     clear_screen()
@@ -184,8 +184,9 @@ while True:
                         elif heart==0:
                             print(translator('Game Over!!!', lang))
                             print(f'{translator('Our record: ', lang)}{points} {translator('points.', lang)}')
-                            base[name][mode_game][1]+=points
-                            pywrite('base.json', base)
+                            if base[name][mode_game][1]<points:
+                                print('OUR NEW HIGHSCORE!!!')
+                                pywrite('base.json', base)
                             break
                 number+=1
                 question=choice(lst)
@@ -230,6 +231,15 @@ while True:
                     nums_question-=1
                 lst.remove(question)
 
+            end=input(translator('Enter to exit mode: ', lang))
+            clear_screen()
+
+        case 'Rules':
+            if lang=='ru':
+                rules=pyread('ru_rules.txt')
+            else:
+                rules=pyread('en_rules.txt')
+            print(rules)
             end=input(translator('Enter to exit mode: ', lang))
             clear_screen()
 
