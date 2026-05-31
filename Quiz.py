@@ -1,50 +1,11 @@
 from random import choice
 from time import sleep, time
 from propython import pyread, pywrite
-from translator import *
-from subprocess import run
-from platform import system
+from translator import translator
+from utils import *
 
 base=pyread('base.json')
 data=pyread('data.json')
-
-def clear_screen():
-    current_os=system()
-    if current_os=='Windows':
-        run(["cls"], shell=True)
-    else:
-        run(['clear'])
-
-def enter_name():
-    while True:
-        name=input(translator('Enter your name: ', lang))
-        if name!='':
-            data['name']=name
-            pywrite('data.json', data)
-            return name
-
-def enter_lang():
-    print('English |  Русский')
-    while True:
-        chosen_language=input()
-        chosen_language=chosen_language.title().strip()
-        if chosen_language=='English' or chosen_language=='Русский':
-            break
-
-    match chosen_language:
-        case 'Русский':
-            lang='ru'
-            lst=pyread('q2.json')
-            v=['А', 'Б', 'В', 'Г']
-        case 'English':
-            lang='en'
-            lst=pyread('q1.json')
-            v=['A', 'B', 'C', 'D']
-    data['language']=lang
-    data['questions']=lst
-    data['variants']=v
-    pywrite('data.json', data)
-    return lang, lst, v
 
 name=data['name']
 lang=data['language']
@@ -52,11 +13,11 @@ lst=data['questions']
 v=data['variants']
 
 if lang=='' and lst==[] and v==[]:
-    lang, lst, v=enter_lang()
+    lang, lst, v=enter_lang(data)
     clear_screen()
 
 if name=='':
-    name=enter_name()
+    name=enter_name(lang, data)
     clear_screen()
 
 if name not in base:
@@ -67,18 +28,14 @@ while True:
     print(f'{translator('Creator: Abdyrahym Begenjov', lang)}     (GitHub: abdyrahym-begenjov)')
     print(translator('Game      Rules      Highscores      Settings      Exit', lang))
     mode=input(translator('Choose a game mode: ', lang))
-    mode=mode.title().strip()
+    mode=new_word(mode, lang)
     clear_screen()
-    if lang=='ru':
-        mode=translator(mode, 'en1')
     match mode:
         case 'Game':
             while True:
                 print(translator('Timer      Infinity', lang))
                 mode_game=input(translator('Choose a game mode: ', lang))
-                mode_game=mode_game.title().strip()
-                if lang=='ru':
-                    mode_game=translator(mode_game, 'en1')
+                mode_game=new_word(mode_game, lang)
                 if mode_game=='Timer' or mode_game=='Infinity':
                     break
             if name not in base:
@@ -99,9 +56,7 @@ while True:
                 while True:
                     print(translator('Parameters of game: Easy (15), Normal (25), Hard (40), Dangerous (40 with surprise)', lang))
                     parameter=input(translator('Enter the parameter of game: ', lang))
-                    parameter=parameter.title().strip()
-                    if lang=='ru':
-                        parameter=translator(parameter, 'en1')
+                    parameter=new_word(parameter, lang)
                     match parameter:
                         case 'Easy':
                             nums_question=15
@@ -157,35 +112,37 @@ while True:
                                 print(translator('Weak, but still you\'re great!!!', lang))
                                 print('⭐')
                                 final=True
-                            elif regular==irregular:
+                            elif (regular/number)*100==50:
                                 print(translator('The final question to determine the outcome of the game.', lang))
                                 nums_question+=1
+                                final=False
                                 continue
                             else:
                                 print(translator('Game Over!!!', lang))
                                 print('💩')
-                                final=True
-                            seconds=mins*60+secs
+                                break
                             if final:
+                                seconds=mins*60+secs
                                 points=int(regular+(seconds/(irregular+1)))
-                            print(f'{translator('Points: ', lang)}{points}')
-                            base[name][mode_game][1]+=points
-                            pywrite('base.json', base)
-                            break
+                                print(f'{translator('Points: ', lang)}{points}')
+                                base[name][mode_game][1]+=points
+                                pywrite('base.json', base)
+                                break
                         elif seconds<=0:
                             print(translator('Time: 00:00. Game Over!!!', lang))
                             break
                     case 'Infinity':
                         if lst==[]:
                             print(translator('You are ABSOLUTE CHAMPION!!!', lang))
-                            base[name][mode_game][1]+=points
+                            base[name][mode_game][1]=points
                             pywrite('base.json', base)
                             break
                         elif heart==0:
                             print(translator('Game Over!!!', lang))
-                            print(f'{translator('Our record: ', lang)}{points} {translator('points.', lang)}')
+                            print(f'{translator('Points: ', lang)}{points} {translator('points.', lang)}')
                             if base[name][mode_game][1]<points:
                                 print('OUR NEW HIGHSCORE!!!')
+                                base[name][mode_game][1]=points
                                 pywrite('base.json', base)
                             break
                 number+=1
@@ -210,15 +167,7 @@ while True:
                 else:
                     print(translator('No', lang))
                     if mode_game=='Timer' and parameter=='Dangerous':
-                        dict_variants={'Q': 0, v[0]: 1, v[1]: 2, v[2]: 3, v[3]: 4}
-                        old_question=question.copy()
-                        q=old_question[5]
-                        old_question.pop(5)
-                        old_question.pop(dict_variants[q])
-                        dict_variants={j: i for i, j in dict_variants.items()}
-                        old_question_index=[old_question.index(i) for i in old_question]
-                        bomb_list=[dict_variants[i] for i in old_question_index[1:4]]
-                        bomb=choice(bomb_list)
+                        bomb=choose_bomb(question, v)
                         if answer==bomb:
                             print(translator('💣 BOOM!!!', lang))
                             seconds-=10
@@ -244,26 +193,7 @@ while True:
             clear_screen()
 
         case 'Highscores':
-            a, b=[], []
-            for i in base[name].values():
-                a.append(str(i[0]))
-                b.append(str(i[1]))
-            a=[translator(i, lang) for i in a]
-            a=[f'{i:<14}|' for i in a]
-            b=[f'{i:<14}|' for i in b]
-            a=' '.join(a)
-            b=' '.join(b)
-            name1=f'{name} |'
-            line1=f'|{translator('GAME MODE |', lang):>20} {a:<14}'
-            line2=f'|{name1:>20} {b:<14}'
-            line='-'*len(line1)
-            
-            print(line)
-            print(line1)
-            print(line)
-            print(line2)
-            print(line)
-
+            draw_leaderboard(base, name, lang)
             end=input(translator('Enter to exit mode: ', lang))
             clear_screen()
 
@@ -272,15 +202,13 @@ while True:
                 print(f'{translator('Name', lang)}: {data['name']}')
                 print(f'{translator('Language', lang)}: {data['language']}')
                 change=input(translator('Do you want to change parameters (Enter \"Name\" or \"Language\"): ', lang))
-                change=change.title().strip()
-                if lang=='ru':
-                    change=translator(change, 'en1')
+                change=new_word(change, lang)
                 match change:
                     case 'Name':
-                        name=enter_name()
+                        name=enter_name(lang, data)
                         clear_screen()
                     case 'Language':
-                        lang, lst, v=enter_lang()
+                        lang, lst, v=enter_lang(data)
                         clear_screen()
                     case _:
                         break
@@ -288,9 +216,7 @@ while True:
 
         case 'Exit':
             exit_confirm=input(translator('Do you want to exit (\"Yes\" or \"No\"): ', lang))
-            exit_confirm=exit_confirm.title().strip()
-            if lang=='ru':
-                exit_confirm=translator(exit_confirm, 'en1')
+            exit_confirm=new_word(exit_confirm, lang)
             if exit_confirm=='No':
                 clear_screen()
             else:
