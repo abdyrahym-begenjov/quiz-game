@@ -4,28 +4,28 @@ from propython import pyread, pywrite
 from translator import translator
 from utils import *
 
-base=pyread('base.json')
-data=pyread('data.json')
-
-name=data['name']
-lang=data['language']
-lst=data['questions']
-v=data['variants']
-
-if lang=='' and lst==[] and v==[]:
-    lang, lst, v=enter_lang(data)
-    clear_screen()
-
-if name=='':
-    name=enter_name(lang, data)
-    clear_screen()
-
-if name not in base:
-    base[name]={}
-
 while True:
+    base=pyread('base.json')
+    data=pyread('data.json')
+
+    name=data['name']
+    lang=data['language']
+    lst=data['questions']
+    v=data['variants']
+
+    if lang=='' and lst==[] and v==[]:
+        lang, lst, v=enter_lang(data)
+        clear_screen()
+
+    if name=='':
+        name=enter_name(lang, data)
+        clear_screen()
+
+    if name not in base:
+        base[name]={}
+
     print(translator('Quiz', lang))
-    print(f'{translator('Creator: Abdyrahym Begenjov', lang)}     (GitHub: abdyrahym-begenjov)')
+    print(f'{translator("Creator: Abdyrahym Begenjov", lang)}     (GitHub: abdyrahym-begenjov)')
     print(translator('Game      Rules      Highscores      Settings      Exit', lang))
     mode=input(translator('Choose a game mode: ', lang))
     mode=new_word(mode, lang)
@@ -75,23 +75,7 @@ while True:
                 start_game=input(translator('Enter to start game: ', lang))
                 print(translator('Let\'s Go!!!', lang))
             else:
-                print(f'{translator('You have', lang)} {heart} ❤️')
-
-            def answer_question(countdown=None, seconds=None):
-                while True:
-                    if countdown and seconds:
-                        answer=input(f'{translator('Time: ', lang)}{countdown}. {translator('Enter the variant of answer: ', lang)}')
-                    else:
-                        answer=input(translator('Enter the variant of answer: ', lang))
-                    answer=answer.upper().strip()
-                    if answer in v:
-                        break
-                    else:
-                        print(translator('You must enter the variant!!!', lang))
-                if countdown:
-                    return answer, seconds
-                else:
-                    return answer
+                print(f'{translator("You have", lang)} {heart} ❤️')
 
             while True:
                 match mode_game:
@@ -124,7 +108,7 @@ while True:
                             if final:
                                 seconds=mins*60+secs
                                 points=int(regular+(seconds/(irregular+1)))
-                                print(f'{translator('Points: ', lang)}{points}')
+                                print(f'{translator("Points: ", lang)}{points}')
                                 base[name][mode_game][1]+=points
                                 pywrite('base.json', base)
                                 break
@@ -139,7 +123,7 @@ while True:
                             break
                         elif heart==0:
                             print(translator('Game Over!!!', lang))
-                            print(f'{translator('Points: ', lang)}{points} {translator('points.', lang)}')
+                            print(f'{translator("Points: ", lang)}{points}')
                             if base[name][mode_game][1]<points:
                                 print('OUR NEW HIGHSCORE!!!')
                                 base[name][mode_game][1]=points
@@ -152,11 +136,11 @@ while True:
                 print(f'{v[1]}) {question[2]:<35} {" ":>35} {v[3]}) {question[4]}')
                 if mode_game=='Timer':
                     start=time()
-                    answer, seconds=answer_question(countdown, seconds)
+                    answer, seconds=answer_question(lang, v, countdown, seconds)
                     end=time()
                     seconds=seconds-int(end-start)
                 else:
-                    answer=answer_question()
+                    answer=answer_question(lang, v)
                 if answer==question[5]:
                     print(translator('Yes', lang))
                     if mode_game=='Timer':
@@ -173,7 +157,7 @@ while True:
                             seconds-=10
                     if mode_game=='Infinity':
                         heart-=1
-                        print(f'{translator('You have', lang)} {heart} ❤️.')
+                        print(f'{translator("You have", lang)} {heart} ❤️.')
                     else:
                         irregular+=1
                 if mode_game=='Timer':
@@ -199,8 +183,8 @@ while True:
 
         case 'Settings':
             while True:
-                print(f'{translator('Name', lang)}: {data['name']}')
-                print(f'{translator('Language', lang)}: {data['language']}')
+                print(f'{translator("Name", lang)}: {data['name']}')
+                print(f'{translator("Language", lang)}: {data['language']}')
                 change=input(translator('Do you want to change parameters (Enter \"Name\" or \"Language\"): ', lang))
                 change=new_word(change, lang)
                 match change:

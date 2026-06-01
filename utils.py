@@ -11,14 +11,6 @@ def clear_screen():
     else:
         run(['clear'])
 
-def enter_name(lang, data):
-    while True:
-        name=input(translator('Enter your name: ', lang))
-        if name!='':
-            data['name']=name
-            pywrite('data.json', data)
-            return name
-
 def enter_lang(data):
     print('English |  Русский')
     while True:
@@ -43,6 +35,30 @@ def enter_lang(data):
     data['variants']=v
     pywrite('data.json', data)
     return lang, lst, v
+
+def enter_name(lang, data):
+    while True:
+        name=input(translator('Enter your name: ', lang))
+        if name!='':
+            data['name']=name
+            pywrite('data.json', data)
+            return name
+        
+def answer_question(lang, v, countdown=None, seconds=None):
+    while True:
+        if countdown and seconds:
+            answer=input(f'{translator('Time: ', lang)}{countdown}. {translator('Enter the variant of answer: ', lang)}')
+        else:
+            answer=input(translator('Enter the variant of answer: ', lang))
+        answer=answer.upper().strip()
+        if answer in v:
+            break
+        else:
+            print(translator('You must enter the variant!!!', lang))
+    if countdown:
+        return answer, seconds
+    else:
+        return answer
 
 def draw_leaderboard(base, name, lang):
     a, b=[], []
