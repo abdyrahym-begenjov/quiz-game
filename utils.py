@@ -60,26 +60,31 @@ def answer_question(lang, v, countdown=None, seconds=None):
     else:
         return answer
 
-def draw_leaderboard(base, name, lang):
-    a, b=[], []
-    for i in base[name].values():
-        a.append(str(i[0]))
-        b.append(str(i[1]))
-    a=[translator(i, lang) for i in a]
-    a=[f'{i:<14}|' for i in a]
-    b=[f'{i:<14}|' for i in b]
-    a=' '.join(a)
-    b=' '.join(b)
-    name1=f'{name} |'
-    line1=f'|{translator('GAME MODE |', lang):>20} {a:<14}'
-    line2=f'|{name1:>20} {b:<14}'
+def draw_leaderboard(base, lang):
+    base=list(base.items())
+    base.sort(key=lambda x: x[1][0]+x[1][1], reverse=True)
+    base=dict(base)
+
+    lst=['Timer', 'Infinity', 'Overall Result']
+    lst=[translator(i, lang) for i in lst]
+    lst=[f'{i.upper().strip():<16}|' for i in lst]
+    lst=' '.join(lst)
+    line1=f'|{translator('NAME |', lang):>18} {lst:<16}'
     line='-'*len(line1)
-            
     print(line)
     print(line1)
     print(line)
-    print(line2)
-    print(line)
+
+    for i, j in base.items():
+        name=i
+        a=str(j[0])
+        b=str(j[1])
+        c=j[0]+j[1]
+        name1=f'{name} |'
+    
+        line2=f'|{name1:>18} {a:<16}| {b:<16}| {c:<16}|'
+        print(line2)
+        print(line)
 
 def choose_bomb(question, v):
     dict_variants={'Q': 0, v[0]: 1, v[1]: 2, v[2]: 3, v[3]: 4}

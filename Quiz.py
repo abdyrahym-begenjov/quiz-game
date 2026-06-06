@@ -22,7 +22,7 @@ while True:
         clear_screen()
 
     if name not in base:
-        base[name]={}
+        base[name]=[0, 0]
 
     print(translator('Quiz', lang))
     print(f'{translator("Creator: Abdyrahym Begenjov", lang)}     (GitHub: abdyrahym-begenjov)')
@@ -38,10 +38,6 @@ while True:
                 mode_game=new_word(mode_game, lang)
                 if mode_game=='Timer' or mode_game=='Infinity':
                     break
-            if name not in base:
-                base[name]={}
-            if mode_game not in base[name]:
-                base[name][mode_game]=[mode_game, 0]
 
             print(translator('Loading...', lang))
             sleep(2)
@@ -109,7 +105,7 @@ while True:
                                 seconds=mins*60+secs
                                 points=int(regular+(seconds/(irregular+1)))
                                 print(f'{translator("Points: ", lang)}{points}')
-                                base[name][mode_game][1]+=points
+                                base[name][0]+=points
                                 pywrite('base.json', base)
                                 break
                         elif seconds<=0:
@@ -118,15 +114,15 @@ while True:
                     case 'Infinity':
                         if lst==[]:
                             print(translator('You are ABSOLUTE CHAMPION!!!', lang))
-                            base[name][mode_game][1]=points
+                            base[name][1]=points
                             pywrite('base.json', base)
                             break
                         elif heart==0:
                             print(translator('Game Over!!!', lang))
                             print(f'{translator("Points: ", lang)}{points}')
-                            if base[name][mode_game][1]<points:
+                            if base[name][1]<points:
                                 print('OUR NEW HIGHSCORE!!!')
-                                base[name][mode_game][1]=points
+                                base[name][1]=points
                                 pywrite('base.json', base)
                             break
                 number+=1
@@ -177,7 +173,7 @@ while True:
             clear_screen()
 
         case 'Highscores':
-            draw_leaderboard(base, name, lang)
+            draw_leaderboard(base, lang)
             end=input(translator('Enter to exit mode: ', lang))
             clear_screen()
 
@@ -190,6 +186,8 @@ while True:
                 match change:
                     case 'Name':
                         name=enter_name(lang, data)
+                        if name not in base:
+                            base[name]=[0, 0]
                         clear_screen()
                     case 'Language':
                         lang, lst, v=enter_lang(data)

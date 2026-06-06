@@ -49,7 +49,8 @@ rutranslate={
     'Name': 'Имя',
     'Language': 'Язык',
     'Game': 'Игра',
-    'GAME MODE |': 'РЕЖИМ ИГРЫ |',
+    'NAME |': 'ИМЯ |',
+    'Overall Result': 'Общий Результат',
     'No': 'Нет'
              }
 
